@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Notenarchiv</title>
+
+  <!-- Suchmaschinen ausschließen -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      padding: 10px;
+      font-size: 16px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .subtitle {
+      color: #666;
+    }
+
+    .category {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Notenarchiv</h1>
+
+<div id="app" class="hidden">
+
+  <div class="controls">
+    <input id="search" placeholder="Titel oder Untertitel suchen...">
+    <select id="categoryFilter">
+      <option value="">Alle Kategorien</option>
+    </select>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+<script>
+/* =========================
+   PASSWORT
+========================= */
+const PASSWORD = "jmk123"; // <-- ändern!
+
+const input = prompt("Passwort eingeben:");
+
+if (input !== PASSWORD) {
+  document.body.innerHTML = "<h1>Zugriff verweigert</h1>";
+  throw new Error("Falsches Passwort");
+}
+
+document.getElementById("app").classList.remove("hidden");
+
+/* =========================
+   DATEN LADEN
+========================= */
+let allData = [];
+
+fetch("index.json")
+  .then(r => r.json())
+  .then(data => {
+    allData = data.eintraege || [];
+    populateCategories(allData);
+    render(allData);
+  });
+
+/* =========================
+   SUCHE
+========================= */
+function matchesSearch(item, search) {
+  const text = ((item.titel || "") + " " + (item.untertitel || "")).toLowerCase();
+  return text.includes(search.toLowerCase());
+}
+
+/* =========================
+   FILTER
+========================= */
+function filterData(data, search, category) {
+  return data.filter(item => {
+    const matchesText = !search || matchesSearch(item, search);
+    const matchesCategory = !category || item.kategorie === category;
+    return matchesText && matchesCategory;
+  });
+}
+
+/* =========================
+   RENDERING
+========================= */
+function render(data) {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  const fragment = document.createDocumentFragment();
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div class="title">${item.titel || "Ohne Titel"}</div>
+      <div class="subtitle">${item.untertitel || ""}</div>
+      <div class="category">${item.kategorie || ""}</div>
+    `;
+
+    fragment.appendChild(div);
+  });
+
+  list.appendChild(fragment);
+}
+
+/* =========================
+   KATEGORIEN
+========================= */
+function populateCategories(data) {
+  const select = document.getElementById("categoryFilter");
+
+  const categories = [...new Set(
+    data.map(d => d.kategorie).filter(Boolean)
+  )];
+
+  categories.sort().forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat;
+    select.appendChild(option);
+  });
+}
+
+/* =========================
+   EVENTS
+========================= */
+document.getElementById("search").addEventListener("input", update);
+document.getElementById("categoryFilter").addEventListener("change", update);
+
+function update() {
+  const search = document.getElementById("search").value;
+  const category = document.getElementById("categoryFilter").value;
+
+  const filtered = filterData(allData, search, category);
+  render(filtered);
+}
+</script>
+
+</body>
+</html>
