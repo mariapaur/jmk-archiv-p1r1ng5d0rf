@@ -4,10 +4,7 @@
   <meta charset="UTF-8">
   <title>Notenarchiv</title>
 
-  <!-- Suchmaschinen ausschließen -->
   <meta name="robots" content="noindex, nofollow">
-
-  <!-- Mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -41,6 +38,7 @@
       margin-bottom: 10px;
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
     }
 
     .title {
@@ -61,6 +59,32 @@
     .hidden {
       display: none;
     }
+
+    #detailView {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .detail-row {
+      margin-bottom: 8px;
+    }
+
+    .detail-label {
+      font-weight: bold;
+    }
+
+    .notes {
+      margin-top: 15px;
+      padding: 10px;
+      background: #fff3cd;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 10px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
@@ -79,16 +103,18 @@
 
   <div id="list"></div>
 
+  <div id="detailView" class="hidden">
+    <button onclick="closeDetail()">⬅ Zurück</button>
+    <div id="detailContent"></div>
+  </div>
+
 </div>
 
 <script>
-/* =========================
-   PASSWORT
-========================= */
-const PASSWORD = "jmk123"; // <-- ändern!
+/* PASSWORT */
+const PASSWORD = "jmk123";
 
 const input = prompt("Passwort eingeben:");
-
 if (input !== PASSWORD) {
   document.body.innerHTML = "<h1>Zugriff verweigert</h1>";
   throw new Error("Falsches Passwort");
@@ -96,9 +122,7 @@ if (input !== PASSWORD) {
 
 document.getElementById("app").classList.remove("hidden");
 
-/* =========================
-   DATEN LADEN
-========================= */
+/* DATEN */
 let allData = [];
 
 fetch("index.json")
@@ -109,17 +133,13 @@ fetch("index.json")
     render(allData);
   });
 
-/* =========================
-   SUCHE
-========================= */
+/* SUCHE */
 function matchesSearch(item, search) {
   const text = ((item.titel || "") + " " + (item.untertitel || "")).toLowerCase();
   return text.includes(search.toLowerCase());
 }
 
-/* =========================
-   FILTER
-========================= */
+/* FILTER */
 function filterData(data, search, category) {
   return data.filter(item => {
     const matchesText = !search || matchesSearch(item, search);
@@ -128,9 +148,7 @@ function filterData(data, search, category) {
   });
 }
 
-/* =========================
-   RENDERING
-========================= */
+/* LISTE */
 function render(data) {
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -147,15 +165,14 @@ function render(data) {
       <div class="category">${item.kategorie || ""}</div>
     `;
 
+    div.onclick = () => showDetail(item);
     fragment.appendChild(div);
   });
 
   list.appendChild(fragment);
 }
 
-/* =========================
-   KATEGORIEN
-========================= */
+/* KATEGORIEN */
 function populateCategories(data) {
   const select = document.getElementById("categoryFilter");
 
@@ -171,9 +188,78 @@ function populateCategories(data) {
   });
 }
 
-/* =========================
-   EVENTS
-========================= */
+/* DETAILANSICHT */
+function showDetail(item) {
+  const list = document.getElementById("list");
+  const detailView = document.getElementById("detailView");
+  const content = document.getElementById("detailContent");
+
+  list.style.display = "none";
+  detailView.classList.remove("hidden");
+
+  content.innerHTML = "";
+
+  // wichtige Felder zuerst
+  const priorityFields = ["titel", "untertitel", "komponist", "kategorie"];
+
+  priorityFields.forEach(key => {
+    if (item[key]) {
+      content.appendChild(createRow(key, item[key]));
+    }
+  });
+
+  // restliche Felder
+  Object.entries(item).forEach(([key, value]) => {
+    if (priorityFields.includes(key)) return;
+    if (value === null || value === "") return;
+
+    // Notizen extra hervorheben
+    if (key === "notizen") {
+      const note = document.createElement("div");
+      note.className = "notes";
+      note.innerHTML = `<b>Notizen:</b><br>${value}`;
+      content.appendChild(note);
+      return;
+    }
+
+    content.appendChild(createRow(key, value));
+  });
+}
+
+/* ROW ERZEUGEN */
+function createRow(key, value) {
+  const row = document.createElement("div");
+  row.className = "detail-row";
+
+  row.innerHTML = `
+    <span class="detail-label">${formatLabel(key)}:</span>
+    <span>${formatValue(value)}</span>
+  `;
+
+  return row;
+}
+
+/* LABEL FORMAT */
+function formatLabel(key) {
+  return key
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, l => l.toUpperCase());
+}
+
+/* VALUE FORMAT */
+function formatValue(value) {
+  if (value === true) return "Ja";
+  if (value === false) return "Nein";
+  return value;
+}
+
+/* ZURÜCK */
+function closeDetail() {
+  document.getElementById("detailView").classList.add("hidden");
+  document.getElementById("list").style.display = "block";
+}
+
+/* EVENTS */
 document.getElementById("search").addEventListener("input", update);
 document.getElementById("categoryFilter").addEventListener("change", update);
 
