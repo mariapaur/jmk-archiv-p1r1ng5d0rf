@@ -17,6 +17,7 @@ fetch("index.json")
   .then(data => {
     allData = data.eintraege || [];
     populateCategories(allData);
+    populateGenres(allData);
     render(allData);
   });
 
@@ -35,7 +36,7 @@ function matchesPerson(item, search) {
 }
 
 /* FILTER */
-function filterData(data, search, personSearch, category) {
+function filterData(data, search, personSearch, category, genre) {
   return data.filter(item => {
 
     const matchesText =
@@ -47,7 +48,10 @@ function filterData(data, search, personSearch, category) {
     const matchesCategory =
       !category || item.kategorie === category;
 
-    return matchesText && matchesPersonText && matchesCategory;
+    const matchesGenre =
+      !genre || item.genre === genre;
+
+    return matchesText && matchesPersonText && matchesCategory && matchesGenre;
   });
 }
 
@@ -87,6 +91,22 @@ function populateCategories(data) {
     const option = document.createElement("option");
     option.value = cat;
     option.textContent = cat;
+    select.appendChild(option);
+  });
+}
+
+/* GENRES */
+function populateGenres(data) {
+  const select = document.getElementById("genreFilter");
+
+  const genres = [...new Set(
+    data.map(d => d.genre).filter(Boolean)
+  )];
+
+  genres.sort().forEach(g => {
+    const option = document.createElement("option");
+    option.value = g;
+    option.textContent = g;
     select.appendChild(option);
   });
 }
@@ -166,12 +186,14 @@ function closeDetail() {
 document.getElementById("search").addEventListener("input", update);
 document.getElementById("personSearch").addEventListener("input", update);
 document.getElementById("categoryFilter").addEventListener("change", update);
+document.getElementById("genreFilter").addEventListener("change", update);
 
 function update() {
   const search = document.getElementById("search").value;
   const personSearch = document.getElementById("personSearch").value;
   const category = document.getElementById("categoryFilter").value;
+  const genre = document.getElementById("genreFilter").value;
 
-  const filtered = filterData(allData, search, personSearch, category);
+  const filtered = filterData(allData, search, personSearch, category, genre);
   render(filtered);
 }
