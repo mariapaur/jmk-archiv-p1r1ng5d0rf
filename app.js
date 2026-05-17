@@ -26,12 +26,28 @@ function matchesSearch(item, search) {
   return text.includes(search.toLowerCase());
 }
 
+function matchesPerson(item, search) {
+  const text = (
+    (item.komponist || "") + " " + (item.arrangeur || "")
+  ).toLowerCase();
+
+  return text.includes(search.toLowerCase());
+}
+
 /* FILTER */
-function filterData(data, search, category) {
+function filterData(data, search, personSearch, category) {
   return data.filter(item => {
-    const matchesText = !search || matchesSearch(item, search);
-    const matchesCategory = !category || item.kategorie === category;
-    return matchesText && matchesCategory;
+
+    const matchesText =
+      !search || matchesSearch(item, search);
+
+    const matchesPersonText =
+      !personSearch || matchesPerson(item, personSearch);
+
+    const matchesCategory =
+      !category || item.kategorie === category;
+
+    return matchesText && matchesPersonText && matchesCategory;
   });
 }
 
@@ -148,12 +164,14 @@ function closeDetail() {
 
 /* EVENTS */
 document.getElementById("search").addEventListener("input", update);
+document.getElementById("personSearch").addEventListener("input", update);
 document.getElementById("categoryFilter").addEventListener("change", update);
 
 function update() {
   const search = document.getElementById("search").value;
+  const personSearch = document.getElementById("personSearch").value;
   const category = document.getElementById("categoryFilter").value;
 
-  const filtered = filterData(allData, search, category);
+  const filtered = filterData(allData, search, personSearch, category);
   render(filtered);
 }
