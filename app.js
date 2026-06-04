@@ -16,10 +16,30 @@ fetch("index.json")
   .then(r => r.json())
   .then(data => {
     allData = data.eintraege || [];
+
+    showStand(data.stand); // 👈 NEU
+
     populateCategories(allData);
     populateGenres(allData);
     render(allData);
   });
+
+/* STAND */
+function showStand(dateString) {
+  if (!dateString) return;
+
+  const el = document.getElementById("standInfo");
+
+  const date = new Date(dateString);
+
+  const formatted = date.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+
+  el.innerHTML = `<small>Stand: ${formatted}</small>`;
+}
 
 /* SUCHE */
 function matchesSearch(item, search) {
