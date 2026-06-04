@@ -12,29 +12,38 @@
 
 <body>
 
-<h1>Notenarchiv</h1>
-<div id="standInfo"></div>
+<div id="sidebar" class="sidebar">
+  <h3>Filter</h3>
 
-<div id="app" class="hidden">
+  <input id="search" placeholder="Titel / Untertitel">
+  <input id="personSearch" placeholder="Komponist / Arrangeur">
 
-  <div class="controls">
-    <input id="search" placeholder="Titel oder Untertitel suchen...">
-    <input id="personSearch" placeholder="Komponist oder Arrangeur suchen...">
-    <select id="categoryFilter">
-      <option value="">Alle Kategorien</option>
-    </select>
-    <select id="genreFilter">
-      <option value="">Alle Genres</option>
-    </select>
+  <select id="categoryFilter">
+    <option value="">Alle Kategorien</option>
+  </select>
+
+  <select id="genreFilter">
+    <option value="">Alle Genres</option>
+  </select>
+</div>
+  
+<div id="header">
+  <div class="header-top">
+    <button id="menuToggle">☰</button>
+    <h1>Notenarchiv</h1>
   </div>
 
+  <div id="standInfo"></div>
+  <div id="filterStatus"></div>
+</div>
+
+<div id="app" class="hidden">
   <div id="list"></div>
 
   <div id="detailView" class="hidden">
-    <button onclick="closeDetail()">⬅ Zurück</button>
+    <button onclick="closeDetail()">⬅</button>
     <div id="detailContent"></div>
   </div>
-
 </div>
 <script src="app.js"></script>
 
