@@ -41,6 +41,32 @@ function showStand(dateString) {
   el.innerHTML = `<small>Stand: ${formatted}</small>`;
 }
 
+/* SIDEBAR */
+const sidebar = document.getElementById("sidebar");
+const toggle = document.getElementById("menuToggle");
+
+toggle.onclick = () => {
+  sidebar.classList.toggle("active");
+};
+
+/* UPDATE Filter Status */
+function updateFilterStatus(search, personSearch, category, genre) {
+  const el = document.getElementById("filterStatus");
+
+  let parts = [];
+
+  if (search) parts.push(`Text: "${search}"`);
+  if (personSearch) parts.push(`Person: "${personSearch}"`);
+  if (category) parts.push(`Kategorie: ${category}`);
+  if (genre) parts.push(`Genre: ${genre}`);
+
+  if (parts.length === 0) {
+    el.innerHTML = "<small>Keine Filter aktiv</small>";
+  } else {
+    el.innerHTML = "<small>Filter: " + parts.join(" | ") + "</small>";
+  }
+}
+
 /* SUCHE */
 function matchesSearch(item, search) {
   const text = ((item.titel || "") + " " + (item.untertitel || "")).toLowerCase();
@@ -213,6 +239,8 @@ function update() {
   const personSearch = document.getElementById("personSearch").value;
   const category = document.getElementById("categoryFilter").value;
   const genre = document.getElementById("genreFilter").value;
+
+  updateFilterStatus(search, personSearch, category, genre);
 
   const filtered = filterData(allData, search, personSearch, category, genre);
   render(filtered);
