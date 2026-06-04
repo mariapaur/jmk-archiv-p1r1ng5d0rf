@@ -77,8 +77,64 @@ button {
   margin-bottom: 10px;
 }
 
-#standInfo {
-  text-align: center;
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100%;
+  background: white;
+  padding: 15px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  transform: translateX(-100%);
+  transition: 0.3s;
+  z-index: 1000;
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+#menuToggle {
   margin-bottom: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  z-index: 900;
+}
+
+#header {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 10px;
+  z-index: 1000;
+  border-bottom: 1px solid #ddd;
+}
+
+#standInfo,
+#filterStatus {
+  font-size: 12px;
   color: #666;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+#app {
+  margin-top: 10px;
 }
