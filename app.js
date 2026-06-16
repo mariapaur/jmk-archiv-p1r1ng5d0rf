@@ -44,11 +44,7 @@ function showStand(dateString) {
 /* SIDEBAR */
 const sidebar = document.getElementById("sidebar");
 const toggle = document.getElementById("menuToggle");
-
-toggle.onclick = () => {
-  sidebar.classList.toggle("active");
-};
-
+const overlay = document.getElementById("overlay");
 const closeBtn = document.getElementById("closeSidebar");
 
 toggle.onclick = () => {
