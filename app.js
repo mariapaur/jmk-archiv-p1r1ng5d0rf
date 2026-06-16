@@ -49,6 +49,23 @@ toggle.onclick = () => {
   sidebar.classList.toggle("active");
 };
 
+const overlay = document.getElementById("overlay");
+
+toggle.onclick = () => {
+  sidebar.classList.add("active");
+  overlay.classList.remove("hidden");
+};
+
+closeBtn.onclick = () => {
+  sidebar.classList.remove("active");
+  overlay.classList.add("hidden");
+};
+
+overlay.onclick = () => {
+  sidebar.classList.remove("active");
+  overlay.classList.add("hidden");
+};
+
 /* UPDATE Filter Status */
 function updateFilterStatus(search, personSearch, category, genre) {
   const el = document.getElementById("filterStatus");
