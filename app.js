@@ -49,7 +49,6 @@ toggle.onclick = () => {
   sidebar.classList.toggle("active");
 };
 
-const overlay = document.getElementById("overlay");
 const closeBtn = document.getElementById("closeSidebar");
 
 toggle.onclick = () => {
