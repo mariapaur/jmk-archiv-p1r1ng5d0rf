@@ -89,6 +89,9 @@ button {
   transform: translateX(-100%);
   transition: 0.3s;
   z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 #closeSidebar {
